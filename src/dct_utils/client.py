@@ -60,7 +60,11 @@ async def upload_form_entries(
 
 
 async def upload_chat_history(
-    dct_patient_id: str, chat_history: list, trialauth: str, environment: str
+    dct_patient_id: str,
+    send_user: str,
+    chat_history: dict,
+    trialauth: str,
+    environment: str,
 ) -> None:
     """
     异步上传对话历史到DCT系统。
@@ -80,7 +84,7 @@ async def upload_chat_history(
     payload = json.dumps(
         {
             "dctPatientId": dct_patient_id,
-            "sendUser": "assistant",
+            "sendUser": send_user,
             "chatContent": "",
             "form_entry_res": chat_history,
         }
