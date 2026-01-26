@@ -25,6 +25,7 @@ from dct_utils.client import (
     DCT_HOST_MAP,
     upload_chat_history,
     upload_form_entries,
+    get_info_from_dct,
 )
 
 __all__ = [
