@@ -31,4 +31,5 @@ __all__ = [
     "DCT_HOST_MAP",
     "upload_form_entries",
     "upload_chat_history",
+    "get_info_from_dct",
 ]
