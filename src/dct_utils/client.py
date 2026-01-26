@@ -21,7 +21,7 @@ DCT_HOST_MAP = {
 
 
 async def upload_form_entries(
-    form_id: str, payload: str, trialauth: str, environment: str
+    form_id: str, payload: str, trialauth: str, environment: str, unique_id: str
 ) -> None:
     """
     异步调用VoiceStop接口保存问卷结果。
@@ -31,6 +31,7 @@ async def upload_form_entries(
         payload (str): 问卷录入结果，JSON字符串格式。
         trialauth (str): DCT系统的认证令牌。
         environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique (str): 唯一标识符标记请求
 
     Returns:
         None
@@ -50,13 +51,15 @@ async def upload_form_entries(
             )
 
             if response.status_code == 200:
-                logger.info(f"upload_form_entries 请求成功: {response.text}")
+                logger.info(
+                    f"{unique_id} - upload_form_entries 请求成功: {response.text}"
+                )
             else:
                 logger.error(
-                    f"upload_form_entries 请求失败: status_code={response.status_code}, data={response.text}"
+                    f"{unique_id} - upload_form_entries 请求失败: status_code={response.status_code}, data={response.text}"
                 )
     except Exception as e:
-        logger.error(f"upload_form_entries 请求异常: {e}")
+        logger.error(f"{unique_id} - upload_form_entries 请求异常: {e}")
 
 
 async def upload_chat_history(
@@ -65,6 +68,7 @@ async def upload_chat_history(
     chat_history: dict,
     trialauth: str,
     environment: str,
+    unique_id: str,
 ) -> None:
     """
     异步上传对话历史到DCT系统。
@@ -74,6 +78,7 @@ async def upload_chat_history(
         chat_history (list): 对话历史列表，格式为 [{"role": "user/assistant", "content": "..."}]。
         trialauth (str): DCT系统的认证令牌。
         environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique (str): 唯一标识符标记请求
 
     Returns:
         None
@@ -102,13 +107,13 @@ async def upload_chat_history(
             )
 
             if response.status_code == 200:
-                logger.info(f"chat_history 上传成功: {response.text}")
+                logger.info(f"{unique_id} - chat_history 上传成功: {response.text}")
             else:
                 logger.error(
-                    f"chat_history 上传失败: status_code={response.status_code}, data={response.text}"
+                    f"{unique_id} - chat_history 上传失败: status_code={response.status_code}, data={response.text}"
                 )
     except Exception as e:
-        logger.error(f"chat_history 上传异常: {e}")
+        logger.error(f"{unique_id} - chat_history 上传异常: {e}")
 
 
 async def get_info_from_dct(
