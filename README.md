@@ -1,1 +1,1 @@
-uv add git+https://codeup.aliyun.com/5f50579f769820a3e8183358/AI/dct-utils.git@v0.3.1
+uv add git+https://codeup.aliyun.com/5f50579f769820a3e8183358/AI/dct-utils.git@v0.4.0
