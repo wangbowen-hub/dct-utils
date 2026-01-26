@@ -35,7 +35,7 @@ async def upload_form_entries(
     Returns:
         None
     """
-    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["dev"])
+    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["test"])
     url = f"{host}/api/Patient/Chat/VoiceStop/{form_id}"
 
     headers = {
@@ -74,7 +74,7 @@ async def upload_chat_history(
     Returns:
         None
     """
-    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["dev"])
+    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["test"])
     url = f"{host}/api/Patient/Chat/AiChatLogByPy"
 
     payload = json.dumps(
@@ -105,3 +105,32 @@ async def upload_chat_history(
                 )
     except Exception as e:
         logger.error(f"chat_history 上传异常: {e}")
+
+
+async def get_info_from_dct(
+    patient_id: str, oper_num: int, trial_auth: str, environment: str
+) -> str:
+    """
+    从 DCT 平台获取患者信息的底层函数。
+
+    Args:
+        patient_id (str): 患者 ID。
+        oper_num (int): 操作编号，1=下次访视时间，2=访视安排，3=访视任务。
+        trial_auth (str): DCT 平台授权令牌。
+
+    Returns:
+        str: DCT 平台返回的患者信息，或错误提示信息。
+    """
+    headers = {"trialauth": trial_auth}
+    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["dev"])
+    url = f"{host}/api/Patient/Chat/PatientBaseInfo/{patient_id}/{oper_num}"
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            response = await client.get(url, headers=headers)
+            if response.status_code == 200:
+                return response.text
+            else:
+                return "获取DCT数据错误"
+
+    except Exception:
+        return "获取DCT数据错误"
