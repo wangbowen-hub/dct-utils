@@ -67,6 +67,7 @@ async def upload_chat_history(
     send_user: str,
     chat_history: dict,
     trialauth: str,
+    chat_log_id: str,
     environment: str,
     unique_id: str,
 ) -> None:
@@ -91,6 +92,7 @@ async def upload_chat_history(
             "dctPatientId": dct_patient_id,
             "sendUser": send_user,
             "chatContent": "",
+            "chatLogId": chat_log_id,
             "form_entry_res": chat_history,
         }
     )
