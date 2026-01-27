@@ -22,7 +22,7 @@ async def test_get_info_from_dct_success():
     patient_id = "000648f5-de75-6d79-0000-000000000000"
     trial_auth = "7682d55a-cf0d-4419-bd4f-e1bb453d38cb"
     environment = "test"
-    oper_num = 6
+    oper_num = 5
 
     host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["dev"])
     url = f"{host}/api/Patient/Chat/PatientBaseInfo/{patient_id}/{oper_num}"
