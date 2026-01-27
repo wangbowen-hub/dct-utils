@@ -21,37 +21,38 @@ DCT_HOST_MAP = {
 
 
 async def upload_form_entries(
-    form_id: str, payload: str, trialauth: str, environment: str, unique_id: str
+    payload: str, trialauth: str, environment: str, unique_id: str
 ) -> None:
     """
-    异步调用VoiceStop接口保存问卷结果。
+    异步调用SaveQuestByAIChat接口保存问卷结果。
 
     Args:
-        form_id (str): 表单ID。
         payload (str): 问卷录入结果，JSON字符串格式。
         trialauth (str): DCT系统的认证令牌。
         environment (str): 环境标识，可选值为 test/stage/formal/dev。
-        unique (str): 唯一标识符标记请求
+        unique_id (str): 唯一标识符标记请求
 
     Returns:
         None
     """
     host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["test"])
-    url = f"{host}/api/Patient/Chat/VoiceStop/{form_id}"
+    url = f"{host}/api/Patient/Chat/SaveQuestByAIChat"
 
     headers = {
         "trialauth": trialauth,
-        "Content-Type": "text/plain",
+        "Content-Type": "application/json",
     }
 
+    request_payload = json.dumps({"jsonText": payload})
+
     logger.info(
-        f"{unique_id} - upload_form_entries 请求详情: method=PUT, url={url}, headers={headers}, payload={payload}"
+        f"{unique_id} - upload_form_entries 请求详情: method=PUT, url={url}, headers={headers}, payload={request_payload}"
     )
 
     try:
         async with httpx.AsyncClient() as client:
             response = await client.put(
-                url, content=payload, headers=headers, timeout=30.0
+                url, content=request_payload, headers=headers, timeout=30.0
             )
 
             if response.status_code == 200:
@@ -64,6 +65,48 @@ async def upload_form_entries(
                 )
     except Exception as e:
         logger.error(f"{unique_id} - upload_form_entries 请求异常: {e}")
+
+
+async def form_entry_status_change(
+    form_id: str, trialauth: str, environment: str, unique_id: str
+) -> None:
+    """
+    异步调用VoiceStop接口更新问卷状态。
+
+    Args:
+        form_id (str): 表单ID。
+        trialauth (str): DCT系统的认证令牌。
+        environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique_id (str): 唯一标识符标记请求
+
+    Returns:
+        None
+    """
+    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["test"])
+    url = f"{host}/api/Patient/Chat/VoiceStop/{form_id}"
+
+    headers = {
+        "trialauth": trialauth,
+    }
+
+    logger.info(
+        f"{unique_id} - form_entry_status_change 请求详情: method=PUT, url={url}, headers={headers}, form_id={form_id}"
+    )
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.put(url, content="", headers=headers, timeout=30.0)
+
+            if response.status_code == 200:
+                logger.info(
+                    f"{unique_id} - form_entry_status_change 请求成功: {response.text}"
+                )
+            else:
+                logger.error(
+                    f"{unique_id} - form_entry_status_change 请求失败: status={response.status_code}, body={response.text}"
+                )
+    except Exception as e:
+        logger.error(f"{unique_id} - form_entry_status_change 请求异常: {e}")
 
 
 async def upload_chat_history(
@@ -107,19 +150,21 @@ async def upload_chat_history(
     }
 
     logger.info(
-        f"{unique_id} - upload_chat_history 请求详情: method=POST, url={url}, headers={headers}, payload={payload}"
+        f"{unique_id} - upload_chat_history 请求详情: method=PUT, url={url}, headers={headers}, payload={payload}"
     )
 
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(
+            response = await client.put(
                 url, content=payload, headers=headers, timeout=30.0
             )
 
             if response.status_code == 200:
                 logger.info(f"{unique_id} - chat_history 上传成功: {response.text}")
             else:
-                logger.error(f"{unique_id} - chat_history 上传失败: status={response.status_code}, body={response.text}")
+                logger.error(
+                    f"{unique_id} - chat_history 上传失败: status={response.status_code}, body={response.text}"
+                )
     except Exception as e:
         logger.error(f"{unique_id} - chat_history 上传异常: {e}")
 
