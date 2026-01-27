@@ -44,6 +44,10 @@ async def upload_form_entries(
         "Content-Type": "text/plain",
     }
 
+    logger.info(
+        f"{unique_id} - upload_form_entries 请求详情: method=PUT, url={url}, headers={headers}, payload={payload}"
+    )
+
     try:
         async with httpx.AsyncClient() as client:
             response = await client.put(
@@ -56,7 +60,7 @@ async def upload_form_entries(
                 )
             else:
                 logger.error(
-                    f"{unique_id} - upload_form_entries 请求失败: status_code={response.status_code}, data={response.text}"
+                    f"{unique_id} - upload_form_entries 请求失败: status={response.status_code}, body={response.text}"
                 )
     except Exception as e:
         logger.error(f"{unique_id} - upload_form_entries 请求异常: {e}")
@@ -102,6 +106,10 @@ async def upload_chat_history(
         "Content-Type": "application/json",
     }
 
+    logger.info(
+        f"{unique_id} - upload_chat_history 请求详情: method=POST, url={url}, headers={headers}, payload={payload}"
+    )
+
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(
@@ -111,9 +119,7 @@ async def upload_chat_history(
             if response.status_code == 200:
                 logger.info(f"{unique_id} - chat_history 上传成功: {response.text}")
             else:
-                logger.error(
-                    f"{unique_id} - chat_history 上传失败: status_code={response.status_code}, data={response.text}"
-                )
+                logger.error(f"{unique_id} - chat_history 上传失败: status={response.status_code}, body={response.text}")
     except Exception as e:
         logger.error(f"{unique_id} - chat_history 上传异常: {e}")
 
@@ -135,6 +141,11 @@ async def get_info_from_dct(
     headers = {"trialauth": trial_auth}
     host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["dev"])
     url = f"{host}/api/Patient/Chat/PatientBaseInfo/{patient_id}/{oper_num}"
+
+    logger.info(
+        f"patient_id={patient_id} - get_info_from_dct 请求详情: method=GET, url={url}, headers={headers}"
+    )
+
     try:
         async with httpx.AsyncClient(timeout=60) as client:
             response = await client.get(url, headers=headers)
