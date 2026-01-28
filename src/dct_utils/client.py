@@ -171,7 +171,7 @@ async def upload_chat_history(
 
 
 async def get_info_from_dct(
-    patient_id: str, oper_num: int, trial_auth: str, environment: str
+    patient_id: str, oper_num: int, trial_auth: str, environment: str, unique_id: str
 ) -> str:
     """
     从 DCT 平台获取患者信息的底层函数。
@@ -189,7 +189,7 @@ async def get_info_from_dct(
     url = f"{host}/api/Patient/Chat/PatientBaseInfo/{patient_id}/{oper_num}"
 
     logger.info(
-        f"patient_id={patient_id} - get_info_from_dct 请求详情: method=GET, url={url}, headers={headers}"
+        f"{unique_id} - get_info_from_dct 请求详情: patient_id={patient_id}, method=GET, url={url}, headers={headers}"
     )
 
     try:
@@ -198,7 +198,11 @@ async def get_info_from_dct(
             if response.status_code == 200:
                 return response.text
             else:
+                logger.error(
+                    f"{unique_id} - get_info_from_dct 获取失败: status={response.status_code}, body={response.text}"
+                )
                 return "获取DCT数据错误"
 
-    except Exception:
+    except Exception as e:
+        logger.error(f"{unique_id} - get_info_from_dct 获取异常: {e}")
         return "获取DCT数据错误"
