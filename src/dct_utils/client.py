@@ -68,13 +68,14 @@ async def upload_form_entries(
 
 
 async def form_entry_status_change(
-    form_id: str, trialauth: str, environment: str, unique_id: str
+    form_id: str, status: int, trialauth: str, environment: str, unique_id: str
 ) -> None:
     """
     异步调用VoiceStop接口更新问卷状态。
 
     Args:
         form_id (str): 表单ID。
+        status (int): 状态值。
         trialauth (str): DCT系统的认证令牌。
         environment (str): 环境标识，可选值为 test/stage/formal/dev。
         unique_id (str): 唯一标识符标记请求
@@ -83,14 +84,14 @@ async def form_entry_status_change(
         None
     """
     host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["test"])
-    url = f"{host}/api/Patient/Chat/VoiceStop/{form_id}"
+    url = f"{host}/api/Patient/Chat/VoiceStop/{form_id}/{status}"
 
     headers = {
         "trialauth": trialauth,
     }
 
     logger.info(
-        f"{unique_id} - form_entry_status_change 请求详情: method=PUT, url={url}, headers={headers}, form_id={form_id}"
+        f"{unique_id} - form_entry_status_change 请求详情: method=PUT, url={url}, headers={headers}, form_id={form_id}, status={status}"
     )
 
     try:
