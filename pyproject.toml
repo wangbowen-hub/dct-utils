@@ -31,4 +31,4 @@ allow-direct-references = true
 packages = ["src/dct_utils"]
 
 [tool.uv.sources]
-woody-logger = { git = "https://github.com/wangbowen-hub/woody-logger.git", rev = "v1.1.0" }
+woody-logger = { git = "https://github.com/wangbowen-hub/woody-logger.git", rev = "v1.2.0" }
