@@ -55,7 +55,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=0.24.0" },
     { name = "pytest-httpx", marker = "extra == 'test'", specifier = ">=0.30.0" },
-    { name = "woody-logger", git = "https://github.com/wangbowen-hub/woody-logger.git" },
+    { name = "woody-logger", git = "https://github.com/wangbowen-hub/woody-logger.git?rev=v1.1.0" },
 ]
 provides-extras = ["test"]
 
@@ -195,4 +195,4 @@ wheels = [
 [[package]]
 name = "woody-logger"
 version = "0.1.0"
-source = { git = "https://github.com/wangbowen-hub/woody-logger.git#66fce59bb98b9d79891171d78f2b9bbe0207e135" }
+source = { git = "https://github.com/wangbowen-hub/woody-logger.git?rev=v1.1.0#4d340fd90278adf6601fad4a2e62a56140bc2083" }
