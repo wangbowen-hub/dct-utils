@@ -247,8 +247,8 @@ async def notify_show_query(
                 logger.error(
                     f"{unique_id} - notify_show_query 请求失败: status={response.status_code}, body={response.text}"
                 )
-                return "获取DCT数据错误"
+                return "问卷推送失败"
 
     except Exception as e:
         logger.error(f"{unique_id} - notify_show_query 请求异常: {e}")
-        return "获取DCT数据错误"
+        return "问卷推送失败"
