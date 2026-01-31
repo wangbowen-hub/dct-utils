@@ -197,7 +197,7 @@ async def get_info_from_dct(
             response = await client.get(url, headers=headers)
             if response.status_code == 200:
                 logger.info(
-                    f"{unique_id} - get_info_from_dct 数据获取成功 status={response.status_code}, body={response.text}"
+                    f"{unique_id} - get_info_from_dct 数据获取成功 body={response.text}"
                 )
                 return response.text
             else:
@@ -208,4 +208,47 @@ async def get_info_from_dct(
 
     except Exception as e:
         logger.error(f"{unique_id} - get_info_from_dct 获取异常: {e}")
+        return "获取DCT数据错误"
+
+
+async def notify_show_query(
+    patient_id: str, oper_num: int, trial_auth: str, environment: str, unique_id: str
+) -> str:
+    """
+    通知 DCT 平台显示特殊问卷信息。
+
+    Args:
+        patient_id (str): 参与者 ID。
+        oper_num (int): 操作编号。
+        trial_auth (str): DCT 平台授权令牌。
+        environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique_id (str): 唯一标识符标记请求。
+
+    Returns:
+        str: DCT 平台返回的信息，或错误提示信息。
+    """
+    headers = {"trialauth": trial_auth}
+    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["dev"])
+    url = f"{host}/api/Patient/Chat/SpecialQuestInfo/{patient_id}/{oper_num}"
+
+    logger.info(
+        f"{unique_id} - notify_show_query 请求详情: patient_id={patient_id}, oper_num={oper_num}, method=GET, url={url}, headers={headers}"
+    )
+
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            response = await client.get(url, headers=headers)
+            if response.status_code == 200:
+                logger.info(
+                    f"{unique_id} - notify_show_query 请求成功 body={response.text}"
+                )
+                return response.text
+            else:
+                logger.error(
+                    f"{unique_id} - notify_show_query 请求失败: status={response.status_code}, body={response.text}"
+                )
+                return "获取DCT数据错误"
+
+    except Exception as e:
+        logger.error(f"{unique_id} - notify_show_query 请求异常: {e}")
         return "获取DCT数据错误"
