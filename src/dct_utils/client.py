@@ -196,6 +196,9 @@ async def get_info_from_dct(
         async with httpx.AsyncClient(timeout=60) as client:
             response = await client.get(url, headers=headers)
             if response.status_code == 200:
+                logger.info(
+                    f"{unique_id} - get_info_from_dct 数据获取成功 status={response.status_code}, body={response.text}"
+                )
                 return response.text
             else:
                 logger.error(

@@ -2,6 +2,7 @@
 测试 dct_utils.client 模块中的 get_info_from_dct 函数。
 """
 
+import json
 import httpx
 import pytest
 
@@ -20,9 +21,9 @@ async def test_get_info_from_dct_success():
         None
     """
     patient_id = "000648f5-de75-6d79-0000-000000000000"
-    trial_auth = "7682d55a-cf0d-4419-bd4f-e1bb453d38cb"
+    trial_auth = "f646bd1e-cfab-41c4-840c-55d1f86317a9"
     environment = "test"
-    oper_num = 8
+    oper_num = 9
 
     host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["dev"])
     url = f"{host}/api/Patient/Chat/PatientBaseInfo/{patient_id}/{oper_num}"
@@ -33,6 +34,9 @@ async def test_get_info_from_dct_success():
 
     print(f"Status Code: {response.status_code}")
     print(f"Response: {response.text}")
+    print(type(response))
+    print(type(response.text))
+    print(json.loads(response.text))
 
     assert response.status_code == 200
 
