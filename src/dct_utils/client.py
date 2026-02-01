@@ -21,7 +21,7 @@ DCT_HOST_MAP = {
 
 
 async def upload_form_entries(
-    payload: str, trialauth: str, environment: str, unique_id: str
+    payload: str, trialauth: str, row_num: int, environment: str, unique_id: str
 ) -> None:
     """
     异步调用SaveQuestByAIChat接口保存问卷结果。
@@ -43,7 +43,7 @@ async def upload_form_entries(
         "Content-Type": "application/json",
     }
 
-    request_payload = json.dumps({"jsonText": payload})
+    request_payload = json.dumps({"jsonText": payload, "rowNum": row_num})
 
     logger.info(
         f"{unique_id} - upload_form_entries 请求详情: method=PUT, url={url}, headers={headers}, payload={request_payload}"
@@ -68,7 +68,12 @@ async def upload_form_entries(
 
 
 async def form_entry_status_change(
-    form_id: str, status: int, trialauth: str, environment: str, unique_id: str
+    form_id: str,
+    status: int,
+    trialauth: str,
+    row_num: int,
+    environment: str,
+    unique_id: str,
 ) -> None:
     """
     异步调用VoiceStop接口更新问卷状态。
@@ -84,14 +89,14 @@ async def form_entry_status_change(
         None
     """
     host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["test"])
-    url = f"{host}/api/Patient/Chat/VoiceStop/{form_id}/{status}"
+    url = f"{host}/api/Patient/Chat/VoiceStop/{form_id}/{status}/{row_num}"
 
     headers = {
         "trialauth": trialauth,
     }
 
     logger.info(
-        f"{unique_id} - form_entry_status_change 请求详情: method=PUT, url={url}, headers={headers}, form_id={form_id}, status={status}"
+        f"{unique_id} - form_entry_status_change 请求详情: method=PUT, url={url}, headers={headers}, form_id={form_id}, status={status}, row_num={row_num}"
     )
 
     try:
