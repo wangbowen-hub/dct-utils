@@ -27,6 +27,7 @@ from dct_utils.client import (
     upload_form_entries,
     get_info_from_dct,
     form_entry_status_change,
+    upload_quest_item_ai_chat_log,
 )
 
 __all__ = [
@@ -35,4 +36,5 @@ __all__ = [
     "upload_chat_history",
     "get_info_from_dct",
     "form_entry_status_change",
+    "upload_quest_item_ai_chat_log",
 ]

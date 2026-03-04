@@ -4,6 +4,7 @@
 主要函数：
 - upload_form_entries: 异步调用VoiceStop接口保存问卷结果
 - upload_chat_history: 异步上传对话历史到DCT系统
+- upload_quest_item_ai_chat_log: 异步上传推送卡片记录到DCT系统
 """
 
 import json
@@ -257,3 +258,60 @@ async def notify_show_query(
     except Exception as e:
         logger.error(f"{unique_id} - notify_show_query 请求异常: {e}")
         return "问卷推送失败"
+
+
+async def upload_quest_item_ai_chat_log(
+    dct_patient_id: str,
+    chat_content: str,
+    trialauth: str,
+    environment: str,
+    unique_id: str,
+) -> None:
+    """
+    异步上传推送卡片记录到DCT系统。
+
+    Args:
+        dct_patient_id (str): DCT系统的患者ID。
+        chat_content (str): 聊天内容。
+        trialauth (str): DCT系统的认证令牌。
+        environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique_id (str): 唯一标识符标记请求。
+
+    Returns:
+        None
+    """
+    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["test"])
+    url = f"{host}/api/Patient/Chat/QuestItemAiChatLog"
+
+    payload = json.dumps(
+        {
+            "dctPatientId": dct_patient_id,
+            "chatContent": chat_content,
+        }
+    )
+
+    headers = {
+        "trialauth": trialauth,
+        "Content-Type": "application/json",
+    }
+
+    logger.info(
+        f"{unique_id} - upload_quest_item_ai_chat_log 请求详情: method=POST, url={url}, headers={headers}, payload={payload}"
+    )
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url, content=payload, headers=headers, timeout=30.0
+            )
+
+            if response.status_code == 200:
+                logger.info(
+                    f"{unique_id} - upload_quest_item_ai_chat_log 请求成功: {response.text}"
+                )
+            else:
+                logger.error(
+                    f"{unique_id} - upload_quest_item_ai_chat_log 请求失败: status={response.status_code}, body={response.text}"
+                )
+    except Exception as e:
+        logger.error(f"{unique_id} - upload_quest_item_ai_chat_log 请求异常: {e}")
