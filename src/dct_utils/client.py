@@ -263,6 +263,7 @@ async def notify_show_query(
 async def upload_quest_item_ai_chat_log(
     dct_patient_id: str,
     chat_content: str,
+    chat_log_id: str,
     trialauth: str,
     environment: str,
     unique_id: str,
@@ -273,6 +274,7 @@ async def upload_quest_item_ai_chat_log(
     Args:
         dct_patient_id (str): DCT系统的患者ID。
         chat_content (str): 聊天内容。
+        chat_log_id (str): 聊天记录ID。
         trialauth (str): DCT系统的认证令牌。
         environment (str): 环境标识，可选值为 test/stage/formal/dev。
         unique_id (str): 唯一标识符标记请求。
@@ -287,6 +289,7 @@ async def upload_quest_item_ai_chat_log(
         {
             "dctPatientId": dct_patient_id,
             "chatContent": chat_content,
+            "chatLogId": chat_log_id,
         }
     )
 
