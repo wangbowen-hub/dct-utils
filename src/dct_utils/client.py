@@ -22,7 +22,7 @@ DCT_HOST_MAP = {
 
 
 async def upload_form_entries(
-    payload: str, trialauth: str, row_num: int, environment: str, unique_id: str
+    payload: str, trialauth: str, row_num: int, environment: str, unique_id: str, quest_type: int = 1
 ) -> None:
     """
     异步调用SaveQuestByAIChat接口保存问卷结果。
@@ -44,7 +44,7 @@ async def upload_form_entries(
         "Content-Type": "application/json",
     }
 
-    request_payload = json.dumps({"jsonText": payload, "rowNum": row_num})
+    request_payload = json.dumps({"jsonText": payload, "rowNum": row_num, "QuestTemplateType": quest_type})
 
     logger.info(
         f"{unique_id} - upload_form_entries 请求详情: method=PUT, url={url}, headers={headers}, payload={request_payload}"
@@ -318,4 +318,4 @@ async def upload_quest_item_ai_chat_log(
                 )
     except Exception as e:
         logger.error(f"{unique_id} - upload_quest_item_ai_chat_log 请求异常: {e}")
-        
+
