@@ -22,7 +22,7 @@ DCT_HOST_MAP = {
 
 
 async def upload_form_entries(
-    payload: str, trialauth: str, row_num: int, environment: str, unique_id: str, quest_type: int = 1, extraction_content: str = "", original_text: str = "", session_id: str = ""
+    payload: str, trialauth: str, row_num: int, environment: str, unique_id: str, quest_type: int = 1, extraction_content: str = "", original_text: str = "", session_id: str = "", is_it_sae: bool = False
 ) -> None:
     """
     异步调用SaveQuestByAIChat接口保存问卷结果。
@@ -44,7 +44,7 @@ async def upload_form_entries(
         "Content-Type": "application/json",
     }
 
-    request_payload = json.dumps({"jsonText": payload, "rowNum": row_num, "QuestTemplateType": quest_type, "ExtractionContent": extraction_content, "OriginalText": original_text, "SessionId": session_id})
+    request_payload = json.dumps({"jsonText": payload, "rowNum": row_num, "QuestTemplateType": quest_type, "ExtractionContent": extraction_content, "OriginalText": original_text, "SessionId": session_id, "IsItSAE": is_it_sae})
 
     logger.info(
         f"{unique_id} - upload_form_entries 请求详情: method=PUT, url={url}, headers={headers}, payload={request_payload}"
@@ -318,4 +318,51 @@ async def upload_quest_item_ai_chat_log(
                 )
     except Exception as e:
         logger.error(f"{unique_id} - upload_quest_item_ai_chat_log 请求异常: {e}")
+
+
+async def human_customer_service(
+    patient_id: str,
+    trialauth: str,
+    environment: str,
+    unique_id: str,
+) -> None:
+    """
+    异步调用HumanCustomerService接口转人工客服。
+
+    Args:
+        patient_id (str): 患者ID。
+        trialauth (str): DCT系统的认证令牌。
+        environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique_id (str): 唯一标识符标记请求。
+
+    Returns:
+        None
+    """
+    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["test"])
+    url = f"{host}/api/Patient/Chat/HumanCustomerService/{patient_id}"
+
+    headers = {
+        "trialauth": trialauth,
+    }
+
+    logger.info(
+        f"{unique_id} - human_customer_service 请求详情: method=POST, url={url}, headers={headers}"
+    )
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url, content="", headers=headers, timeout=30.0
+            )
+
+            if response.status_code == 200:
+                logger.info(
+                    f"{unique_id} - human_customer_service 请求成功: {response.text}"
+                )
+            else:
+                logger.error(
+                    f"{unique_id} - human_customer_service 请求失败: status={response.status_code}, body={response.text}"
+                )
+    except Exception as e:
+        logger.error(f"{unique_id} - human_customer_service 请求异常: {e}")
 
