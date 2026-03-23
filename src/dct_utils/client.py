@@ -260,6 +260,97 @@ async def notify_show_query(
         return "问卷推送失败"
 
 
+async def get_dct_form(
+    patient_id: str, oper_num: int, trial_auth: str, environment: str, unique_id: str
+) -> dict | None:
+    """
+    从 DCT 平台获取特殊问卷信息。
+
+    Args:
+        patient_id (str): 参与者 ID。
+        oper_num (int): 操作编号。
+        trial_auth (str): DCT 平台授权令牌。
+        environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique_id (str): 唯一标识符标记请求。
+
+    Returns:
+        dict | None: DCT 平台返回的特殊问卷信息，失败时返回 None。
+    """
+    headers = {"trialauth": trial_auth}
+    host = DCT_HOST_MAP.get(environment, DCT_HOST_MAP["dev"])
+    url = f"{host}/api/Patient/Chat/SpecialQuestsInfo/{patient_id}/{oper_num}"
+
+    logger.info(
+        f"{unique_id} - get_dct_form 请求详情: patient_id={patient_id}, oper_num={oper_num}, method=GET, url={url}, headers={headers}"
+    )
+
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            response = await client.get(url, headers=headers)
+            if response.status_code == 200:
+                logger.info(
+                    f"{unique_id} - get_dct_form 请求成功 body={response.text}"
+                )
+                return response.json()
+            else:
+                logger.error(
+                    f"{unique_id} - get_dct_form 请求失败: status={response.status_code}, body={response.text}"
+                )
+                return None
+
+    except Exception as e:
+        logger.error(f"{unique_id} - get_dct_form 请求异常: {e}")
+        return None
+
+
+async def get_ae_form_from_dct(
+    patient_id: str, trial_auth: str, environment: str, unique_id: str
+) -> dict | None:
+    """
+    从 DCT 平台获取不良事件(AE)问卷信息。
+
+    Args:
+        patient_id (str): 参与者 ID。
+        trial_auth (str): DCT 平台授权令牌。
+        environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique_id (str): 唯一标识符标记请求。
+
+    Returns:
+        dict | None: templateType 为 2 的问卷，不存在时返回 None。
+    """
+    result = await get_dct_form(patient_id, 2, trial_auth, environment, unique_id)
+    if result is None:
+        return None
+    for form in result.get("forms", []):
+        if form.get("templateType") == 2:
+            return form
+    return None
+
+
+async def get_cm_form_from_dct(
+    patient_id: str, trial_auth: str, environment: str, unique_id: str
+) -> dict | None:
+    """
+    从 DCT 平台获取合并用药(CM)问卷信息。
+
+    Args:
+        patient_id (str): 参与者 ID。
+        trial_auth (str): DCT 平台授权令牌。
+        environment (str): 环境标识，可选值为 test/stage/formal/dev。
+        unique_id (str): 唯一标识符标记请求。
+
+    Returns:
+        dict | None: templateType 为 3 的问卷，不存在时返回 None。
+    """
+    result = await get_dct_form(patient_id, 3, trial_auth, environment, unique_id)
+    if result is None:
+        return None
+    for form in result.get("forms", []):
+        if form.get("templateType") == 3:
+            return form
+    return None
+
+
 async def upload_quest_item_ai_chat_log(
     dct_patient_id: str,
     chat_content: str,
